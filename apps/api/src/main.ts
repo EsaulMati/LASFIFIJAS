@@ -6,6 +6,11 @@ import { securityHeaders } from './security/security-headers';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const frontendOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
   app.use(securityHeaders);
   app.useGlobalFilters(new PrismaExceptionFilter());
 
@@ -18,15 +23,26 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    origin: (
+      origin: string | undefined,
+      callback: (error: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin || frontendOrigins.includes(origin.replace(/\/$/, ''))) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Origen no permitido por CORS'));
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  const port = Number(process.env.PORT) || 3001;
+  await app.listen(port, '0.0.0.0');
 
-  console.log('Backend corriendo en http://localhost:3001');
+  console.log(`Backend corriendo en el puerto ${port}`);
 }
 
 void bootstrap();
