@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Framework and build output
+.next/
+**/.next/
+dist/
+**/dist/
+build/
+**/build/
+out/
+**/out/
+coverage/
+**/coverage/
+.nyc_output/
+**/.nyc_output/
+
+# Environment files (examples are safe to version)
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Logs and diagnostics
+*.log
+logs/
+**/logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+report.*.json
+
+# Caches and temporary artifacts
+.cache/
+**/.cache/
+.turbo/
+**/.turbo/
+.temp/
+**/.temp/
+.tmp/
+**/.tmp/
+.tmp-dev/
+.validation-logs/
+*.tsbuildinfo
+
+# Generated clients
+**/generated/prisma/
+
+# Editors and operating systems
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local runtime files
+*.pid
+*.pid.lock
+*.seed
+*.pem
+*.key
+*.p12
+*.pfx
+

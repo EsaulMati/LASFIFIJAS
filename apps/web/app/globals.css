@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-app:
+    var(--font-metrophobic), "Segoe UI", Arial, sans-serif;
+  --font-display: var(--font-exo-2), "Segoe UI", Arial, sans-serif;
+  --font-interface: var(--font-expletus-sans), "Trebuchet MS", sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-app);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-app);
+  font-weight: 450;
+}
+
+p,
+input,
+textarea,
+select,
+form {
+  font-family: var(--font-app);
+}
+
+.brand-text {
+  font-family: var(--font-display);
+}
+
+.price-text,
+[role="status"],
+[role="tab"] {
+  font-family: var(--font-interface);
+}
+
+h1,
+h2,
+h3,
+.font-black,
+.font-extrabold {
+  font-family: var(--font-display);
+}
+
+button,
+nav,
+label,
+.font-bold,
+.font-semibold {
+  font-family: var(--font-interface);
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #20c997 #06130f;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #20c997 #06130f;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #06130f;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid #06130f;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #32d6aa, #0e8f70);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #52e6bd, #16ad88);
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 4px;
+}
+
+.primary-action {
+  background-image: linear-gradient(
+    135deg,
+    #6ee7b7 0%,
+    #34d399 48%,
+    #10b981 100%
+  );
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.16);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.primary-action:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(16, 185, 129, 0.24);
+}
+
+.primary-action:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.primary-action:disabled {
+  filter: grayscale(0.45);
+  box-shadow: none;
+}
+
+@keyframes dashboard-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-card-enter {
+  animation: dashboard-card-enter 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  [data-hero-glow] {
+    transform: none !important;
+  }
+}

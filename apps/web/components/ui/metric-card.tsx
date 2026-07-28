@@ -1,0 +1,4 @@
+import { ReactNode } from "react";
+export function MetricCard({ label, value, hint, icon }: { label: string; value: string | number; hint?: string; icon?: ReactNode }) {
+  return <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.025] p-5 shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-emerald-400/25"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p><p className="mt-2 text-3xl font-extrabold text-white">{value}</p>{hint && <p className="mt-2 text-xs text-slate-500">{hint}</p>}</div>{icon && <span aria-hidden="true" className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300">{icon}</span>}</div></article>;
+}

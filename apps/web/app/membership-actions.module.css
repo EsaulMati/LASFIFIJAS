@@ -1,0 +1,125 @@
+/* From Uiverse.io by Randdose */
+.membershipGrid {
+  isolation: isolate;
+}
+.membershipCard {
+  transition:
+    transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 400ms ease,
+    opacity 400ms ease,
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+.membershipActionButton {
+  position: relative;
+  display: flex;
+  min-height: 48px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 0.75rem 1.25rem;
+  color: #a7f3d0;
+  font-weight: 800;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 10px 25px rgba(6, 78, 59, 0.16);
+  transition:
+    color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease;
+  user-select: none;
+}
+.membershipActionButton::before,
+.membershipActionButton::after {
+  content: "";
+  position: absolute;
+  width: 10rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #34d399;
+  opacity: 0.55;
+  transition:
+    transform 500ms ease,
+    background-color 300ms ease;
+}
+.membershipActionButton::before {
+  left: 0;
+  transform: translateX(-9rem);
+}
+.membershipActionButton::after {
+  right: 0;
+  transform: translateX(9rem);
+}
+.membershipActionButton:hover {
+  color: #020617;
+  border-color: #6ee7b7;
+  box-shadow: 0 14px 34px rgba(16, 185, 129, 0.28);
+}
+.membershipActionButton:hover::before {
+  transform: translateX(-1.4rem);
+}
+.membershipActionButton:hover::after {
+  transform: translateX(1.4rem);
+}
+.membershipActionButton:active {
+  transform: translateY(1px) scale(0.99);
+  border-color: #10b981;
+}
+.membershipActionButton:active::before,
+.membershipActionButton:active::after {
+  background: #10b981;
+}
+.membershipActionButton:focus-visible {
+  outline: 2px solid #6ee7b7;
+  outline-offset: 4px;
+}
+.membershipActionButton[aria-disabled="true"],
+.membershipActionButton[aria-busy="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.membershipButtonLabel {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .membershipGrid:hover .membershipCard:not(:hover):not(:focus-within) {
+    filter: brightness(0.72) saturate(0.72) blur(1px);
+    opacity: 0.72;
+    transform: scale(0.96);
+  }
+  .membershipCard:hover,
+  .membershipCard:focus-within {
+    z-index: 2;
+    transform: translateY(-0.5rem) scale(1.035);
+    border-color: rgb(52 211 153 / 0.72);
+    box-shadow: 0 24px 55px rgb(6 78 59 / 0.34);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .membershipCard,
+  .membershipActionButton,
+  .membershipActionButton::before,
+  .membershipActionButton::after {
+    transition: none;
+  }
+  .membershipActionButton:hover::before {
+    transform: translateX(-9rem);
+  }
+  .membershipActionButton:hover::after {
+    transform: translateX(9rem);
+  }
+  .membershipGrid:hover .membershipCard:not(:hover),
+  .membershipCard:hover {
+    filter: none;
+    transform: none;
+  }
+}
