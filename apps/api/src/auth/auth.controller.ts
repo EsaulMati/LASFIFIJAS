@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import type { Request, Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthUser } from './auth-user.type';
@@ -19,6 +19,20 @@ import { RateLimitGuard } from '../security/rate-limit.guard';
 import { CSRF_COOKIE } from '../security/security.constants';
 
 const AUTH_COOKIE = 'auth_token';
+const AUTH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+
+export function getAuthCookieOptions(
+  nodeEnv = process.env.NODE_ENV,
+): CookieOptions {
+  const isProduction = nodeEnv === 'production';
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
+  };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -34,11 +48,8 @@ export class AuthController {
     const result = await this.authService.login(loginDto);
 
     response.cookie(AUTH_COOKIE, result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
+      ...getAuthCookieOptions(),
+      maxAge: AUTH_COOKIE_MAX_AGE,
     });
 
     return { user: result.user };
@@ -72,10 +83,7 @@ export class AuthController {
   @UseGuards(RateLimitGuard, CsrfGuard)
   logout(@Res({ passthrough: true }) response: Pick<Response, 'clearCookie'>) {
     response.clearCookie(AUTH_COOKIE, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
+      ...getAuthCookieOptions(),
     });
 
     return { message: 'Sesión cerrada correctamente' };

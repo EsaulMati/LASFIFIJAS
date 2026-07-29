@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
+import { AuthController, getAuthCookieOptions } from './auth.controller';
 import { AuthService } from './auth.service';
 import type { Response } from 'express';
 import { Role } from '@prisma/client';
@@ -21,6 +21,7 @@ describe('AuthController', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
@@ -59,5 +60,61 @@ describe('AuthController', () => {
     expect(result).toEqual({ user });
     expect(result).not.toHaveProperty('accessToken');
     expect(result).not.toHaveProperty('token');
+  });
+
+  it('usa una cookie cross-site segura en producción al iniciar sesión', async () => {
+    const user = {
+      id: 'user-production',
+      name: 'Cliente',
+      email: 'production@example.com',
+      role: Role.CLIENT,
+    };
+    login.mockResolvedValue({ token: 'production-test-token', user });
+    const cookie: Response['cookie'] = jest.fn();
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+
+    try {
+      await controller.login(
+        { email: user.email, password: 'Segura123!' },
+        { cookie },
+      );
+    } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+    }
+
+    expect(cookie).toHaveBeenCalledWith(
+      'auth_token',
+      'production-test-token',
+      expect.objectContaining(getAuthCookieOptions('production')),
+    );
+  });
+
+  it('usa las mismas opciones relevantes al eliminar la cookie', () => {
+    const clearCookie: Response['clearCookie'] = jest.fn();
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+
+    try {
+      controller.logout({ clearCookie });
+    } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+    }
+
+    expect(clearCookie).toHaveBeenCalledWith(
+      'auth_token',
+      getAuthCookieOptions('production'),
+    );
+  });
+
+  it('mantiene SameSite Lax y Secure desactivado en desarrollo', () => {
+    expect(getAuthCookieOptions('development')).toEqual({
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
+    });
   });
 });
