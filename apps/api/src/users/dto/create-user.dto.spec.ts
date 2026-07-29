@@ -43,6 +43,18 @@ describe('CreateUserDto password rules', () => {
     await expect(passwordMessages('Segura123!')).resolves.toEqual([]);
   });
 
+  it('no recorta ni transforma los símbolos de la contraseña', async () => {
+    const password = ' Segura123!# ';
+    const dto = plainToInstance(CreateUserDto, {
+      name: 'Cliente',
+      email: 'cliente@example.com',
+      password,
+    });
+
+    await expect(validate(dto)).resolves.toEqual([]);
+    expect(dto.password).toBe(password);
+  });
+
   it.each([
     ['Corta1!', 'al menos 8 caracteres'],
     ['segura123!', 'letra mayúscula'],

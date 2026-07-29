@@ -144,7 +144,7 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
     } catch (error) {
       const message =
         error instanceof ApiError && error.kind === "credentials"
-          ? "El correo o la contraseña son incorrectos"
+          ? "Correo o contraseña incorrectos"
           : error instanceof Error
             ? error.message
             : "Error al iniciar sesión";

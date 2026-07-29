@@ -19,6 +19,13 @@ export class AuthService {
       where: {
         email: loginDto.email,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        passwordHash: true,
+      },
     });
 
     if (!user) {
