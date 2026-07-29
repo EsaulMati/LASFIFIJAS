@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController, getAuthCookieOptions } from './auth.controller';
+import {
+  AuthController,
+  getAuthCookieOptions,
+  getCsrfCookieOptions,
+} from './auth.controller';
 import { AuthService } from './auth.service';
 import type { Response } from 'express';
 import { Role } from '@prisma/client';
@@ -116,5 +120,41 @@ describe('AuthController', () => {
       sameSite: 'lax',
       path: '/',
     });
+  });
+
+  it('crea la cookie CSRF cross-site en producción', () => {
+    const cookie: Response['cookie'] = jest.fn();
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+
+    try {
+      controller.issueCsrfToken({ cookie });
+    } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+    }
+
+    expect(cookie).toHaveBeenCalledWith(
+      'csrf_token',
+      expect.any(String),
+      getCsrfCookieOptions('production'),
+    );
+    expect(getCsrfCookieOptions('production')).toEqual({
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
+  });
+
+  it('elimina también la cookie CSRF después de un logout válido', () => {
+    const clearCookie: Response['clearCookie'] = jest.fn();
+
+    controller.logout({ clearCookie });
+
+    expect(clearCookie).toHaveBeenCalledWith(
+      'csrf_token',
+      getCsrfCookieOptions(),
+    );
   });
 });

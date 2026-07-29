@@ -128,6 +128,8 @@ export async function apiFetch<T>(
       throw new ApiError(message ?? "Ocurrió un error inesperado", response.status, kind, details);
     }
 
+    if (path === "/auth/logout") csrfToken = null;
+
     return data as T;
   } catch (error) {
     if (error instanceof ApiError) throw error;

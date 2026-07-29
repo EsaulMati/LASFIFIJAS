@@ -34,6 +34,19 @@ export function getAuthCookieOptions(
   };
 }
 
+export function getCsrfCookieOptions(
+  nodeEnv = process.env.NODE_ENV,
+): CookieOptions {
+  const isProduction = nodeEnv === 'production';
+
+  return {
+    httpOnly: false,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
+  };
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -69,12 +82,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Pick<Response, 'cookie'>,
   ) {
     const csrfToken = randomBytes(32).toString('base64url');
-    response.cookie(CSRF_COOKIE, csrfToken, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookie(CSRF_COOKIE, csrfToken, getCsrfCookieOptions());
     return { csrfToken };
   }
 
@@ -85,6 +93,7 @@ export class AuthController {
     response.clearCookie(AUTH_COOKIE, {
       ...getAuthCookieOptions(),
     });
+    response.clearCookie(CSRF_COOKIE, getCsrfCookieOptions());
 
     return { message: 'Sesión cerrada correctamente' };
   }

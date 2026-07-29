@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { apiFetch, ApiError } from "@/lib/api";
 import { AuthUser, Role } from "@/lib/types";
 import { useSound } from "@/components/sound-provider";
+import { completeLogout } from "@/lib/logout";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -106,19 +107,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await apiFetch<{ message: string }>("/auth/logout", { method: "POST" });
-      toast.success("Sesión cerrada correctamente", { id: "logout-success" });
-      play("success");
+      await completeLogout(
+        () => apiFetch<{ message: string }>("/auth/logout", { method: "POST" }),
+        () => {
+          userRef.current = null;
+          setUser(null);
+          toast.success("Sesión cerrada correctamente", { id: "logout-success" });
+          play("success");
+          router.replace("/login");
+          router.refresh();
+        },
+      );
     } catch (error) {
-      if (!(error instanceof ApiError) || error.kind !== "session") {
-        toast.error(error instanceof Error ? error.message : "No se pudo cerrar la sesión", { id: "logout-error" });
-        play("error");
-      }
-    } finally {
-      userRef.current = null;
-      setUser(null);
-      router.replace("/");
-      router.refresh();
+      toast.error(error instanceof Error ? error.message : "No se pudo cerrar la sesión", { id: "logout-error" });
+      play("error");
     }
   }, [play, router]);
 
