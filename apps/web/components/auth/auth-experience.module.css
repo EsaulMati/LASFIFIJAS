@@ -262,10 +262,16 @@
     opacity: 0.28;
   }
   .shell {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
+    --mobile-panel-height: 10.5rem;
+    height: max(39rem, calc(100dvh - 4.75rem));
+    min-height: 39rem;
+    max-width: 100%;
+    overflow: hidden;
     border-radius: 1.5rem;
+    transition: height 680ms cubic-bezier(0.22, 0.82, 0.22, 1);
+  }
+  .shell.registerMode {
+    height: 68rem;
   }
   .authStage {
     min-height: 100dvh;
@@ -273,36 +279,103 @@
     padding-top: 1rem;
   }
   .authLayout {
+    width: 100%;
     gap: 0.75rem;
+    min-width: 0;
   }
-  .infoPanel { position: relative; inset: auto; left: auto; width: 100%; min-height: auto; padding: 1.25rem; border: 0; border-bottom: 1px solid rgb(110 231 183 / 0.18); border-radius: 1.5rem 1.5rem 0 0; transform: none !important; box-shadow: none; }
+  .infoPanel {
+    position: absolute;
+    inset: auto 0 0;
+    left: auto;
+    width: 100%;
+    min-height: var(--mobile-panel-height);
+    padding: 2.25rem 1.25rem 1.25rem;
+    overflow: visible;
+    border: 0;
+    border-radius: 0 0 1.5rem 1.5rem;
+    box-shadow: 0 -18px 42px rgb(0 0 0 / 0.2);
+    transform: translateY(0);
+    will-change: transform;
+  }
+  .infoPanel::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: -2.75rem;
+    left: -10%;
+    width: 120%;
+    height: 5.5rem;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    background: linear-gradient(145deg, rgb(52 211 153 / 0.2), rgb(5 46 42 / 0.96)), #052e2b;
+    border-top: 1px solid rgb(110 231 183 / 0.18);
+  }
+  .registerMode .infoPanel {
+    border-right: 0;
+    box-shadow: 0 -18px 42px rgb(0 0 0 / 0.2);
+    transform: translateY(0);
+  }
+  .hasSwitchedMode.registerMode .infoPanel {
+    animation: mobile-panel-sweep-up 680ms cubic-bezier(0.22, 0.82, 0.22, 1);
+  }
+  .hasSwitchedMode:not(.registerMode) .infoPanel {
+    animation: mobile-panel-sweep-down 680ms cubic-bezier(0.22, 0.82, 0.22, 1);
+  }
   .panelContent { max-width: none; }
   .panelDesktopCopy { display: none; }
   .formPane {
-    position: relative;
-    inset: auto;
+    position: absolute;
+    inset: 0 0 auto;
     width: 100%;
-    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    min-height: calc(100% - var(--mobile-panel-height));
+    box-sizing: border-box;
     overflow: visible;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem calc(var(--mobile-panel-height) + 1.5rem);
     transition:
-      opacity 280ms ease,
-      transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      opacity 240ms ease,
+      transform 520ms cubic-bezier(0.22, 0.82, 0.22, 1),
+      visibility 0s linear 620ms;
   }
-  .loginPane { overflow-y: visible; }
+  .hasSwitchedMode .formPane {
+    transition:
+      opacity 240ms ease,
+      transform 520ms cubic-bezier(0.22, 0.82, 0.22, 1),
+      visibility 0s linear 620ms;
+  }
+  .loginPane {
+    overflow-y: visible;
+    justify-content: flex-start;
+    padding-top: clamp(2rem, 7vh, 4rem);
+  }
   .registerPane {
     right: auto;
     padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-bottom: calc(var(--mobile-panel-height) + 1.5rem);
   }
-  .formPane:not(.activePane) {
-    display: none;
+  .hiddenLeft {
+    transform: translateY(-1.5rem);
   }
-  .hiddenLeft,
   .hiddenRight {
-    transform: translateX(0);
+    transform: translateY(1.5rem);
+  }
+  .activePane {
+    transform: translateY(0);
+  }
+  .hasSwitchedMode .activePane {
+    transition-delay: 300ms, 160ms, 0s;
   }
   .mobileSwitch { display: block; }
+
+  @keyframes mobile-panel-sweep-up {
+    0%, 100% { transform: translateY(0); }
+    48% { transform: translateY(clamp(-24rem, -48dvh, -14rem)); }
+  }
+
+  @keyframes mobile-panel-sweep-down {
+    0%, 100% { transform: translateY(0); }
+    48% { transform: translateY(clamp(-20rem, -42dvh, -12rem)); }
+  }
 }
 
 @media (max-height: 780px) and (min-width: 768px) {
@@ -330,4 +403,12 @@
   }
   .panelContent > * { animation: none; }
   .infoPanel { transition: none; }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .hasSwitchedMode.registerMode .infoPanel,
+  .hasSwitchedMode:not(.registerMode) .infoPanel {
+    animation: none;
+  }
+  .shell { transition: none; }
 }
