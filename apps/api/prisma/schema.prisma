@@ -15,6 +15,7 @@ model User {
   id           String      @id @default(uuid())
   name         String
   email        String      @unique
+  phone        String?
   passwordHash String
   role         Role        @default(CLIENT)
   createdAt    DateTime    @default(now())
