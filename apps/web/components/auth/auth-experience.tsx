@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { BackButton } from "@/components/back-button";
 import { PasswordVisibilityButton } from "@/components/password-visibility-button";
-import { useSound } from "@/components/sound-provider";
 import { HoneycombLoader } from "@/components/ui/honeycomb-loader";
 import { AuthPattern } from "@/components/auth/auth-pattern";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -34,7 +33,6 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
   const router = useRouter();
   const { login, user, loading: sessionLoading } = useAuth();
-  const { play } = useSound();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -139,7 +137,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
     setLoginErrors({});
     try {
       await login(loginEmail.trim(), loginPassword);
-      play("success");
       toast.success("Inicio de sesión exitoso", { id: "login-success" });
     } catch (error) {
       const message =
@@ -149,7 +146,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
             ? error.message
             : "Error al iniciar sesión";
       setLoginErrors({ form: message });
-      play("error");
       toast.error(message, { id: "login-error" });
     } finally {
       setLoginLoading(false);
@@ -189,7 +185,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
       setLoginPassword("");
       setRegisterPassword("");
       setConfirmPassword("");
-      play("success");
       toast.success("Cuenta creada correctamente", { id: "register-success" });
       changeMode("login", true);
     } catch (error) {
@@ -198,7 +193,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
           ...current,
           email: "Este correo electrónico ya está registrado",
         }));
-        play("error");
         toast.error("El correo ya está registrado", {
           id: "register-conflict",
         });
@@ -210,7 +204,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
       } else {
         const message =
           error instanceof Error ? error.message : "No se pudo crear la cuenta";
-        play("error");
         toast.error(message, { id: "register-error" });
       }
     } finally {
@@ -318,7 +311,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                       email: undefined,
                       form: undefined,
                     }));
-                    play("typing");
                   }}
                   placeholder="correo@ejemplo.com"
                   aria-invalid={Boolean(loginErrors.email)}
@@ -351,7 +343,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                         password: undefined,
                         form: undefined,
                       }));
-                      play("typing");
                     }}
                     placeholder="Tu contraseña"
                     aria-invalid={Boolean(loginErrors.password)}
@@ -435,7 +426,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                       ...current,
                       name: undefined,
                     }));
-                    play("typing");
                   }}
                   aria-invalid={Boolean(registerErrors.name)}
                   aria-describedby="register-name-message"
@@ -469,7 +459,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                       ...current,
                       email: undefined,
                     }));
-                    play("typing");
                   }}
                   aria-invalid={Boolean(registerErrors.email)}
                   aria-describedby="register-email-message"
@@ -501,7 +490,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                         ...current,
                         password: undefined,
                       }));
-                      play("typing");
                     }}
                     aria-invalid={Boolean(registerErrors.password)}
                     aria-describedby="register-password-message password-strength password-requirements"
@@ -581,7 +569,6 @@ export function AuthExperience({ initialMode }: { initialMode: AuthMode }) {
                         ...current,
                         confirmPassword: undefined,
                       }));
-                      play("typing");
                     }}
                     aria-invalid={
                       Boolean(registerErrors.confirmPassword) ||
